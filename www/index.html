@@ -167,7 +167,7 @@
 
 <div data-role="page" data-dialog="true" data-close-btn="none" style="background-color: white" id="addfriend-page">
     <div data-role="header" style="text-align: center; background-color: silver">
-        <span style="font-size: x-large">Friends List</span>
+        <span style="font-size: x-large">Add Friends/Groups</span>
     </div>
 
     <div data-role="main" class="ui-content"
@@ -176,13 +176,28 @@
             <div id="groups-div">
             </div>
             <button id="btn-addgroup" type="button" class="ui-btn ui-corner-all" style="background-color: green; color:white;">
-            <span class="fa fa-plus"></span> Create Group
+            <span class="fa fa-plus"></span> Create Group </button>
+            <div id="creategroup-div">
+            </div>
             <div id="addfriend-div">
+                <h2 id="groupname"></h2>
             </div>
         </form>
     </div>
 </div>
 
+<div data-role="page" data-dialog="true" data-close-btn="none" style="background-color: white" id="showfriend-page">
+    <div data-role="header" style="text-align: center; background-color: silver">
+        <span style="font-size: x-large">Friends List</span>
+    </div>
+
+    <div data-role="main" class="ui-content"
+         style="align-content: center; background-color: white">
+            <div id="friends-div">
+            </div>
+        </form>
+    </div>
+</div>
 
 
 </body>
