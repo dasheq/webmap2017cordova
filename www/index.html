@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WMAP 2017</title>
+
+    <!--ask me for the server IP in class-->
+
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' data: gap: https://ssl.gstatic.com
+              http://138.68.177.124:8000
+              https://*.tile.openstreetmap.org https://*.tile.osm.org
+              http://*.tile.openstreetmap.org http://*.tile.osm.org
+              'unsafe-eval';
+              style-src 'self' 'unsafe-inline';
+              script-src 'self' 'unsafe-inline';
+              media-src *">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+          content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <link rel="stylesheet" type="text/css" href="external/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" type="text/css" href="external/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="external/leaflet/leaflet.css">
+    <link rel="stylesheet" type="text/css" href="external/Leaflet.ExtraMarkers/dist/css/leaflet.extra-markers.min.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/style1.css">
+
+    <script src="external/jquery/jquery-1.12.4.js"></script>
+    <script src="external/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="external/leaflet/leaflet.js"></script>
+    <script src="external/Leaflet.ExtraMarkers/dist/js/leaflet.extra-markers.min.js"></script>
+    
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    </head>
+
+<body onload="onLoad();">
+
+<div data-role="page" style="background-color: white" id="main-page">
+    <div id="main-div" data-role="main" class="ui-content">
+        <h1>Dublin Attractions Directory</h1>
+    </div>
+    <div data-role="footer" data-id="main-foot" class="ui-header ui-bar-a" role="banner" data-position="fixed"
+         style="text-align:center; background-color: rgba(255,255,255,0.2);" data-tap-toggle="false">
+        <table>
+            <tr>
+                <td style="text-align: left; vertical-align: middle; width: 10%">
+                    <a href="#map-page" id="goto-map" class="ui-btn-mini ui-btn-inline">
+                        <span class="fa fa-map fa-2x" style="color:lightslategrey"></span>
+                    </a>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div data-role="page" style="background-color: white" id="map-page">
+    <div data-role="header" style="text-align:center; background-color: rgba(255,255,255,0.8);" data-position="fixed"
+         data-tap-toggle="false">
+        <table style="width: 100%">
+            <tr>
+                <td style="text-align: left; vertical-align: middle; width: 55%">
+                    <span style="font-size: large">Dublin Places</span>
+                </td>
+                <td style="text-align: middle; vertical-align:middle; width: 15%">
+                    <span class="sp-addfriend"></span>Add Friend
+                    <span class="plain-a" id="sp-addfriendbtn">
+                    <i class="fa fa-plus fa-3x"></i></span>
+                <td style="text-align: middle; vertical-align:middle; width: 15%">
+                    <span class="sp-friends"></span>Friends List
+                    <span class="plain-a" id="sp-friendlist">
+                    <i class="fa fa-address-book-o fa-3x"></i></span>
+                <td style="text-align: right; vertical-align: middle; width: 15%">
+                    <span class="sp-username"></span>&nbsp;
+                    <span class="plain-a" id="sp-logout">
+                        <i class='fa fa-sign-out fa-3x'></i></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="map-var" style="width: 100%; height: 100%;"></div>
+    <div data-role="footer" style="text-align:center; background-color: rgba(255,255,255,0.2);" data-position="fixed"
+         data-tap-toggle="false">
+        <table style="width: 100%">
+            <tr>
+                <td style="text-align: left; vertical-align: middle; width: 10%">
+                    <a id="goto-currentlocation" class="ui-btn-mini ui-btn-inline">
+                        <span class="fa fa-crosshairs fa-3x" style="color:deepskyblue"></span>
+                    </a>
+                <td style="text-align: left; vertical-align: middle; width: 10%">
+                    <a id="show-garda" class="ui-btn-mini ui-btn-inline">
+                        <span class="fa fa-university fa-3x" style="color:green"></span>
+                    </a>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <span id="leaflet-copyright" style="font-size: xx-small"></span>
+    </div>
+</div>
+
+<div data-role="page" data-dialog="true" data-close-btn="none" style="background-color: white" id="login-page">
+    <div data-role="header" style="text-align: center; background-color: silver">
+        <span style="font-size: x-large">Login Page</span>
+    </div>
+
+    <div data-role="main" class="ui-content"
+         style="align-content: center; background-color: white">
+        <form role="form">
+            <div class="ui-field-contain">
+                <label id="label-in-username" for="in-username"><span class="fa fa-user fa-fw"></span></label>
+                <input type="text" class="form-control" id="in-username" placeholder="Username">
+                <label id="label-in-password" for="in-password"><span class="fa fa-lock fa-fw"></span></label>
+                <input type="password" class="form-control" id="in-password" placeholder="Password">
+            </div>
+            <button id="btn-login" type="button" class="ui-btn ui-corner-all live-button"
+                    style="background-color: #669966; color: white;">
+                <span class="fa fa-sign-in fa-lg"></span> Log In
+            </button>
+            <button id="btn-signup" type="button" class="ui-btn ui-corner-all live-button"
+                    style="background-color: #6d2d32; color: white;">
+                <span class="fa fa-sign-in fa-lg"></span> Sign Up
+            </button>
+        </form>
+    </div>
+</div>
+
+<div data-role="page" data-dialog="true" data-close-btn="none" style="background-color: white" id="signup-page">
+    <div data-role="header" style="text-align: center; background-color: silver">
+        <span style="font-size: x-large">Register User</span>
+    </div>
+
+    <div data-role="main" class="ui-content"
+         style="align-content: center; background-color: white">
+        <form role="form">
+            <div class="ui-field-contain">
+                <label id="label-in-username" for="in-username1"><span class="fa fa-user fa-fw"></span></label>
+                <input type="text" class="form-control" id="in-username1" placeholder="Username">
+                <label id="label-in-password" for="in-password1"><span class="fa fa-lock fa-fw"></span></label>
+                <input type="password" class="form-control" id="in-password1" placeholder="Password">
+                <label id="label-in-cpassword" for="in-password2"><span class="fa fa-lock fa-fw"></span>Confirm Password</label>
+                <input type="password" class="form-control" id="in-password2" placeholder="Confirm Password">
+                <label id="label-in-email" for="in-email">Email</label>
+                <input type="text" class="form-control" id="in-email" placeholder="ex. john@john.com">
+                <label id="label-in-fname" for="in-fname">First Name</label>
+                <input type="text" class="form-control" id="in-fname">
+                <label id="label-in-lname" for="in-lname">Last Name</label>
+                <input type="text" class="form-control" id="in-lname">
+            </div>
+            <button id="btn-signupsend" type="button" class="ui-btn ui-corner-all live-button"
+                    style="background-color: #6d2d32; color: white;">
+                <span class="fa fa-sign-in fa-lg"></span> Register
+            </button>
+        </form>
+    </div>
+</div>
+
+<div data-role="page" data-dialog="true" data-close-btn="none" style="background-color: white" id="signup-page">
+    <div data-role="header" style="text-align: center; background-color: silver">
+        <span style="font-size: x-large">Friends List</span>
+    </div>
+
+    <div data-role="main" class="ui-content"
+         style="align-content: center; background-color: white">
+        <form role="form">
+            <div class="ui-field-contain">
+                <label id="label-in-username" for="in-username1"><span class="fa fa-user fa-fw"></span></label>
+                <input type="text" class="form-control" id="in-username1" placeholder="Username">
+                <label id="label-in-password" for="in-password1"><span class="fa fa-lock fa-fw"></span></label>
+                <input type="password" class="form-control" id="in-password1" placeholder="Password">
+                <label id="label-in-cpassword" for="in-password2"><span class="fa fa-lock fa-fw"></span>Confirm Password</label>
+                <input type="password" class="form-control" id="in-password2" placeholder="Confirm Password">
+                <label id="label-in-email" for="in-email">Email</label>
+                <input type="text" class="form-control" id="in-email" placeholder="ex. john@john.com">
+                <label id="label-in-fname" for="in-fname">First Name</label>
+                <input type="text" class="form-control" id="in-fname">
+                <label id="label-in-lname" for="in-lname">Last Name</label>
+                <input type="text" class="form-control" id="in-lname">
+            </div>
+            <button id="btn-signupsend" type="button" class="ui-btn ui-corner-all live-button"
+                    style="background-color: #6d2d32; color: white;">
+                <span class="fa fa-sign-in fa-lg"></span> Register
+            </button>
+        </form>
+    </div>
+</div>
+
+
+
+</body>
+</html>
+
