@@ -5,11 +5,13 @@ var URLS = {
     userme: "/rest/userme/",
     updateposition: "/rest/updateposition/",
     signup: "/signup",
-    showgarda: "/rest/show_garda/",
-    register: "/rest/signup"
+    showlocations: "/rest/show_locations/",
+    register: "/rest/signup", 
+    showgroups: "/rest/show_groups"
 };
 
 var map;
+var currentUser = "";
 
 var curIcon = L.ExtraMarkers.icon({
     icon: 'fa-map-marker',
@@ -56,7 +58,7 @@ function onDeviceReady() {
             getCurrentlocation();
         });
         $("#show-garda").on("touchstart", function () {
-            showgarda();
+            showlocations();
         });
         $("#map-page").enhanceWithin();
 
@@ -189,7 +191,37 @@ function showFriends() {
 }
 
 function addFriendMenu() {
-    showOkAlert("Add friends");
+    var keys = [];
+
+    $.mobile.navigate("#addfriend-page");
+    var groupDiv = document.getElementById("groups-div");
+    groupDiv.innerHTML ="";
+    $.ajax({
+            type: "GET",
+            url: HOST + URLS["showgroups"],
+            data: {
+                owner: currentUser
+            }
+        }).done(function (data, status, xhr) {
+            showOkAlert(data.data);
+            keys = data.data;
+            for (var i=0;i<keys.length;i++) {
+                var label = document.createElement("label");
+                var radio = document.createElement("input");
+                radio.type = "radio";
+                label.innerHTML = keys[i].name;
+                radio.value = keys[i].name;
+                label.appendChild(radio);
+                groupDiv.appendChild(label);    
+            }
+        }).fail(function (xhr, status, error) {
+            var message = "Getting Groups Failed";
+            if ((!xhr.status) && (!navigator.onLine)) {
+                message += "Bad Internet Connection\n";
+            }
+            message += "Status: " + xhr.status + " " + xhr.responseText;
+            showOkAlert(message);
+        });
 }
 
 
@@ -230,6 +262,8 @@ function setMapToCurrentLocation() {
         map.flyTo(myLatLon, 15);
     }
 }
+
+
 
 function updatePosition() {
     console.log("In updatePosition.");
@@ -290,9 +324,21 @@ function setUserName() {
         url: HOST + URLS["userme"]
     }).done(function (data, status, xhr) {
         $(".sp-username").html(xhr.responseJSON.properties.username);
+        getUserName();
     }).fail(function (xhr, status, error) {
         $(".sp-username").html("");
     });
+}
+
+function getUserName() {
+    $.ajax({
+        type: "GET",
+        url: HOST + URLS["userme"]
+    }).done(function (data, status, xhr) {
+        currentUser = xhr.responseJSON.properties.username;
+    }).fail(function (xhr, status, error) {
+        showOkAlert("Failed to retrieve username");
+    })
 }
 
 function onSuccess(result){
@@ -308,12 +354,12 @@ function callPhone(number) {
 
 } 
 
-function showgarda() {
+function showlocations() {
 
     $.ajax({
         type: "GET",
         headers: {"Authorization": localStorage.authtoken},
-        url: HOST + URLS["showgarda"]
+        url: HOST + URLS["showlocations"]
     }).done(function (data, status, xhr) {
         var parsedJSON = JSON.parse(data.data);
         for (var i=0;i<parsedJSON.length;i++) {
@@ -334,7 +380,18 @@ function showgarda() {
 
             L.marker(myLatLon, {icon: attIcon}).addTo(map).bindPopup(contentString);
          }
+
+         L.Routing.control({
+  waypoints: [
+    L.latLng(57.74, 11.94),
+    L.latLng(57.6792, 11.949)
+  ]
+}).addTo(map);
     }).fail(function (xhr, status, error) {
         $(".sp-username").html("");
     });
 }
+
+/*
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> */
